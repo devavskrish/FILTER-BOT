@@ -1,6 +1,6 @@
 # This code has been modified by @Looteredev
 # Please do not remove this credit
-import async
+import asyncio
 import ast
 import math
 import random
