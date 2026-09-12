@@ -1,6 +1,4 @@
-# This code has been modified by @Looteredev
-# Please do not remove this credit
-import asyncio
+
 import re
 import ast
 import math
@@ -179,7 +177,7 @@ async def next_page(bot, query):
         curr_time = datetime.now(pytz.timezone('Asia/Kolkata')).time()
         ident, req, key, offset = query.data.split("_")
         if int(req) not in [query.from_user.id, 0]:
-            return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+            return await query.answer(_fun_notice(script.FUN_NOT_YOUR_REQUEST, query.from_user.first_name), show_alert=True)
         try:
             offset = int(offset)
         except:
@@ -319,7 +317,7 @@ async def language_check(bot, query):
         curr_time = datetime.now(pytz.timezone('Asia/Kolkata')).time()
         _, userid, language = query.data.split("#")
         if int(userid) not in [query.from_user.id, 0]:
-            return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+            return await query.answer(_fun_notice(script.FUN_NOT_YOUR_REQUEST, query.from_user.first_name), show_alert=True)
         if language == "unknown":
             return await query.answer("Sᴇʟᴇᴄᴛ ᴀɴʏ ʟᴀɴɢᴜᴀɢᴇ ғʀᴏᴍ ᴛʜᴇ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴs !", show_alert=True)
         movie = temp.KEYWORD.get(query.from_user.id)
@@ -413,7 +411,7 @@ async def select_language(bot, query):
     _, userid = query.data.split("#")
     curr_time = datetime.now(pytz.timezone('Asia/Kolkata')).time()
     if int(userid) not in [query.from_user.id, 0]:
-        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+        return await query.answer(_fun_notice(script.FUN_NOT_YOUR_REQUEST, query.from_user.first_name), show_alert=True)
     btn = [[
         InlineKeyboardButton("Sᴇʟᴇᴄᴛ Yᴏᴜʀ Dᴇꜱɪʀᴇᴅ Lᴀɴɢᴜᴀɢᴇ ↓", callback_data=f"lang#{userid}#unknown")
     ],[
@@ -449,7 +447,7 @@ async def quality_check(bot, query):
         curr_time = datetime.now(pytz.timezone('Asia/Kolkata')).time()
         _, userid, quality = query.data.split("#")
         if int(userid) not in [query.from_user.id, 0]:
-            return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+            return await query.answer(_fun_notice(script.FUN_NOT_YOUR_REQUEST, query.from_user.first_name), show_alert=True)
         if quality == "unknown":
             return await query.answer("Sᴇʟᴇᴄᴛ ᴀɴʏ Qᴜᴀʟɪᴛʏꜱ ғʀᴏᴍ ᴛʜᴇ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴs !", show_alert=True)
         movie = temp.KEYWORD.get(query.from_user.id)
@@ -542,7 +540,7 @@ async def select_quality(bot, query):
     _, userid = query.data.split("#")
     curr_time = datetime.now(pytz.timezone('Asia/Kolkata')).time()
     if int(userid) not in [query.from_user.id, 0]:
-        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+        return await query.answer(_fun_notice(script.FUN_NOT_YOUR_REQUEST, query.from_user.first_name), show_alert=True)
     btn = [[
         InlineKeyboardButton("Sᴇʟᴇᴄᴛ Yᴏᴜʀ Dᴇꜱɪʀᴇᴅ Qᴜᴀʟɪᴛʏꜱ ↓", callback_data=f"lusifilms#{userid}#unknown")
     ],[
@@ -571,7 +569,7 @@ async def seasons_check(bot, query):
         curr_time = datetime.now(pytz.timezone('Asia/Kolkata')).time()
         _, userid, seasons = query.data.split("#")
         if int(userid) not in [query.from_user.id, 0]:
-            return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+            return await query.answer(_fun_notice(script.FUN_NOT_YOUR_REQUEST, query.from_user.first_name), show_alert=True)
         if seasons == "unknown":
             return await query.answer("Sᴇʟᴇᴄᴛ ᴀɴʏ Sᴇᴀꜱᴏɴꜱ ғʀᴏᴍ ᴛʜᴇ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴs !", show_alert=True)
         movie = temp.KEYWORD.get(query.from_user.id)
@@ -664,7 +662,7 @@ async def select_seasons(bot, query):
     _, userid = query.data.split("#")
     curr_time = datetime.now(pytz.timezone('Asia/Kolkata')).time()
     if int(userid) not in [query.from_user.id, 0]:
-        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+        return await query.answer(_fun_notice(script.FUN_NOT_YOUR_REQUEST, query.from_user.first_name), show_alert=True)
     btn = [[
         InlineKeyboardButton("Sᴇʟᴇᴄᴛ Yᴏᴜʀ Dᴇꜱɪʀᴇᴅ Sᴇᴀꜱᴏɴꜱ ↓", callback_data=f"seasons#{userid}#unknown")
     ],[
@@ -700,7 +698,7 @@ async def episode_check(bot, query):
         curr_time = datetime.now(pytz.timezone('Asia/Kolkata')).time()
         _, userid, episode = query.data.split("#")
         if int(userid) not in [query.from_user.id, 0]:
-            return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+            return await query.answer(_fun_notice(script.FUN_NOT_YOUR_REQUEST, query.from_user.first_name), show_alert=True)
         if episode == "unknown":
             return await query.answer("Sᴇʟᴇᴄᴛ ᴀɴʏ ᴇᴘ ғʀᴏᴍ ᴛʜᴇ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴs !", show_alert=True)
         movie = temp.KEYWORD.get(query.from_user.id)
@@ -792,7 +790,7 @@ async def episode_check(bot, query):
 async def select_episode2(bot, query):
     _, userid = query.data.split("#")
     if int(userid) not in [query.from_user.id, 0]:
-        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+        return await query.answer(_fun_notice(script.FUN_NOT_YOUR_REQUEST, query.from_user.first_name), show_alert=True)
     btn = [[
         InlineKeyboardButton("Sᴇʟᴇᴄᴛ Yᴏᴜʀ Dᴇꜱɪʀᴇᴅ Eᴘɪsᴏᴅᴇs ↓", callback_data=f"episode#{userid}#unknown")
     ],[
@@ -829,7 +827,7 @@ async def select_episode2(bot, query):
 async def select_episode(bot, query):
     _, userid = query.data.split("#")
     if int(userid) not in [query.from_user.id, 0]:
-        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+        return await query.answer(_fun_notice(script.FUN_NOT_YOUR_REQUEST, query.from_user.first_name), show_alert=True)
     btn = [[
         InlineKeyboardButton("Sᴇʟᴇᴄᴛ Yᴏᴜʀ Dᴇꜱɪʀᴇᴅ Eᴘɪsᴏᴅᴇs ↓", callback_data=f"episode#{userid}#unknown")
     ],[
@@ -866,7 +864,7 @@ async def select_episode(bot, query):
 async def pm_spoll_choker(bot, query):
     _, id, user = query.data.split('#')
     if int(user) != 0 and query.from_user.id != int(user):
-        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+        return await query.answer(_fun_notice(script.FUN_NOT_YOUR_REQUEST, query.from_user.first_name), show_alert=True)
     movie = await get_poster(id, id=True)
     search = movie.get('title')
     await query.answer('ᴄʜᴇᴄᴋɪɴɢ ɪɴ ᴍʏ ᴅᴀᴛᴀʙᴀꜱᴇ 🌚')
@@ -1070,7 +1068,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ident, file_id = query.data.split("#")
         user = query.message.reply_to_message.from_user.id
         if int(user) != 0 and query.from_user.id != int(user):
-            return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+            return await query.answer(_fun_notice(script.FUN_NOT_YOUR_REQUEST, query.from_user.first_name), show_alert=True)
         await query.answer(url=f"https://t.me/{temp.U_NAME}?start=files_{query.message.chat.id}_{file_id}")
                  
             
@@ -1748,28 +1746,98 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.message.edit_reply_markup(reply_markup)
     await query.answer(MSG_ALRT)
 
+def _fun_notice(pool, *args):
+    """Return a random Step-2 fun notification, with safe formatting."""
+    try:
+        text = random.choice(pool)
+        return text.format(*args) if args else text
+    except Exception:
+        return pool[0].format(*args) if args else pool[0]
+
+
 async def ai_spell_check(chat_id, wrong_name):
-    try:  
-        async def search_movie(wrong_name):
-            search_results = imdb.search_movie(wrong_name)
-            movie_list = [movie['title'] for movie in search_results]
-            return movie_list
-        movie_list = await search_movie(wrong_name)
-        if not movie_list:
-            return
-        for _ in range(5):
-            closest_match = process.extractOne(wrong_name, movie_list)
-            if not closest_match or closest_match[1] <= 80:
-                return 
-            movie = closest_match[0]
-            files, offset, total_results = await get_search_results(chat_id=chat_id, query=movie)
+    """Find a likely movie/series title when the database search has no result.
+
+    This keeps the existing IMDb-based approach, but normalizes common user input
+    mistakes first and compares several useful query variants.  No external AI/API
+    key is required, so the existing bot configuration continues to work.
+    """
+    try:
+        def normalize_title(value):
+            value = str(value or "").lower()
+            value = value.replace("&", " and ")
+            value = re.sub(r"['’`\"]", "", value)
+            value = re.sub(r"[._+\-:/\\|]+", " ", value)
+            value = re.sub(r"[^a-z0-9\s]", " ", value)
+            value = re.sub(r"\s+", " ", value).strip()
+            return value
+
+        original = normalize_title(wrong_name)
+        if not original:
+            return None
+
+        # Remove words that users commonly add while asking the bot for a file.
+        noise_words = {
+            "movie", "movies", "film", "full", "file", "files", "send",
+            "please", "pls", "plz", "give", "link", "download", "new",
+            "latest", "watch", "series", "season", "episode", "dubbed",
+            "with", "subtitle", "subtitles", "chahiye", "chiye", "bhejo",
+            "dijiye", "jaldi", "karo", "krdo", "do", "hai", "he", "the",
+            "in", "upload", "print", "hd", "south", "bollywood", "hollywood"
+        }
+        cleaned_words = [word for word in original.split() if word not in noise_words]
+        cleaned = " ".join(cleaned_words).strip() or original
+
+        # Small typo/spacing variants improve matches such as:
+        # "spidrman no way hom" -> "spider man no way home".
+        variants = [cleaned]
+        variants.append(re.sub(r"\bspidr\b", "spider", cleaned))
+        variants.append(re.sub(r"\bspiderman\b", "spider man", cleaned))
+        variants.append(re.sub(r"\bno\s*wai\b", "no way", cleaned))
+        variants.append(re.sub(r"\bhom\b", "home", cleaned))
+        variants = list(dict.fromkeys(v.strip() for v in variants if v.strip()))
+
+        # IMDb search is used only for candidate discovery; the bot still verifies
+        # every candidate against its own database before accepting it.
+        movie_candidates = {}
+        for variant in variants[:5]:
+            try:
+                results = imdb.search_movie(variant)
+            except Exception:
+                continue
+            for movie in results or []:
+                title = movie.get("title")
+                if title:
+                    movie_candidates[title] = movie
+
+        if not movie_candidates:
+            return None
+
+        candidate_titles = list(movie_candidates.keys())
+        best_candidates = process.extract(cleaned, candidate_titles, limit=10)
+
+        for match in best_candidates:
+            # fuzzywuzzy versions return either (choice, score) or
+            # (choice, score, index); support both forms.
+            movie = match[0]
+            score = match[1]
+            if score < 72:
+                continue
+
+            files, offset, total_results = await get_search_results(
+                chat_id=chat_id,
+                query=movie,
+                offset=0,
+                filter=True,
+            )
             if files:
                 return movie
-            movie_list.remove(movie)
-        return
+
+        return None
     except Exception as e:
-        print('Got error while searching movie in ai_spell_check', e)
-        
+        logger.exception("Got error while searching movie in ai_spell_check: %s", e)
+        return None
+
 async def auto_filter(client, msg, spoll=False):
     try:
         curr_time = datetime.now(pytz.timezone('Asia/Kolkata')).time()
@@ -1801,10 +1869,10 @@ async def auto_filter(client, msg, spoll=False):
                     await m.delete()
                     if settings["spell_check"]:
                         ai_sts = await message.reply_sticker(sticker=f"CAACAgQAAxkBAAEq2R9mipkiW9ACyj7oQXznwKTPHqNCXQACkBUAA3mRUZGx4GwLX9XCHgQ")
-                        st=await message.reply('<b>Ai is Cheking For Your Spelling. Please Wait.</b>') 
+                        st=await message.reply(f'<b>{_fun_notice(script.FUN_AI_CHECK)}</b>') 
                         is_misspelled = await ai_spell_check(chat_id = message.chat.id,wrong_name=search)
                         if is_misspelled:
-                            await st.edit(f'<b>Ai Suggested <code>{is_misspelled}</code> name\nSo Im Searching for <code>{is_misspelled}</code></b>')
+                            await st.edit(f'<b>{_fun_notice(script.FUN_AI_FOUND, is_misspelled)}</b>')
                             await asyncio.sleep(2)
                             msg.text = is_misspelled
                             await ai_sts.delete()
@@ -2016,7 +2084,7 @@ async def advantage_spell_chok(client, message):
     try:
         movies = await get_poster(search, bulk=True)
     except:
-        k = await message.reply(script.I_CUDNT.format(search))
+        k = await message.reply_text(_fun_notice(script.FUN_ERROR))
         await asyncio.sleep(60)
         await k.delete()
         try:
@@ -2029,7 +2097,7 @@ async def advantage_spell_chok(client, message):
         button = [[
             InlineKeyboardButton("🔍 ᴄʜᴇᴄᴋ sᴘᴇʟʟɪɴɢ ᴏɴ ɢᴏᴏɢʟᴇ 🔍", url=f"https://www.google.com/search?q={google}")
         ]]
-        k = await message.reply_text(text=script.I_CUDNT.format(search), reply_markup=InlineKeyboardMarkup(button))
+        k = await message.reply_text(text=_fun_notice(script.FUN_NO_RESULT, search), reply_markup=InlineKeyboardMarkup(button))
         await asyncio.sleep(120)
         await k.delete()
         try:
@@ -2046,7 +2114,7 @@ async def advantage_spell_chok(client, message):
     buttons.append(
         [InlineKeyboardButton(text="🚫 ᴄʟᴏsᴇ 🚫", callback_data='close_data')]
     )
-    d = await message.reply_text(text=script.CUDNT_FND.format(search), reply_markup=InlineKeyboardMarkup(buttons), reply_to_message_id=message.id)
+    d = await message.reply_text(text=_fun_notice(script.FUN_NO_RESULT, search), reply_markup=InlineKeyboardMarkup(buttons), reply_to_message_id=message.id)
     await asyncio.sleep(120)
     await d.delete()
     try:
