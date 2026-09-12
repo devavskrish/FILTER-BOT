@@ -1,5 +1,6 @@
-
-import re
+# This code has been modified by @Looteredev
+# Please do not remove this credit
+import async
 import ast
 import math
 import random
