@@ -194,6 +194,45 @@ Money heist S0E01
 
     TOP_ALRT_MSG = """sᴇᴀʀᴄʜɪɴɢ 🔍..."""
 
+    # Step 2: Fun notification variations for a more engaging search experience.
+    FUN_SEARCHING = [
+        "🔍 Ruko zara... database mein detective mode ON hai 🕵️😂",
+        "🚀 Search engine ko thoda workout karne do... mil raha hai 😎",
+        "👀 Ek minute... movie ko database ke kone-kone mein dhoond raha hoon!",
+        "🤖 Database se pooch raha hoon: ‘Bhai ye movie kidhar hai?’ 😂",
+    ]
+
+    FUN_NO_RESULT = [
+        "😵 Arre yaar! Is baar database bhi blank ho gaya 😂\n\n🔎 **{}** ke liye kuch nahi mila.",
+        "🕵️ Maine poora database chhaan maara... **{}** nahi mila 🥲",
+        "🤔 Ye title toh database se hide-and-seek khel raha hai 😂\n\n**{}** ke liye result nahi mila.",
+        "🚫 Mission failed, boss! **{}** ka file nahi mila 😭\n\nSpelling ya title thoda change karke try karo.",
+    ]
+
+    FUN_AI_CHECK = [
+        "🧠 Keyboard ne shayad thoda prank kiya hai 😂\nSpelling check kar raha hoon...",
+        "🤓 Ruko, typo pakadne gaya hoon... 🔎",
+        "🕵️ AI detective mode ON! Galat spelling ko dhoond raha hoon 😂",
+    ]
+
+    FUN_AI_FOUND = [
+        "😂 Samajh gaya! Tumhara keyboard thoda naughty tha.\n\n✨ Suggested: <code>{}</code>\n🔍 Ab isi naam se search karta hoon...",
+        "🧠 Spelling ka jugaad mil gaya! 😎\n\n✨ <code>{}</code>\n🚀 Searching...",
+        "🎯 Bingo! Shayad tumhara matlab <code>{}</code> tha.\n\n🔎 Chalo, ab asli search shuru!",
+    ]
+
+    FUN_ERROR = [
+        "😵 Oops! Database ne thoda drama kar diya 😂\nPlease try again.",
+        "🤖 Arre! Bot ka brain ek second ke liye buffering mein chala gaya 😭\nTry again.",
+        "⚠️ Kuch technical gadbad ho gayi... movie nahi, error mil gaya 😂",
+    ]
+
+    FUN_NOT_YOUR_REQUEST = [
+        "😂 Oye {}! Ye request tumhari nahi lag rahi!\nApni wali request ka button dabao 😎",
+        "😜 Thoda patience boss! Ye kisi aur ki movie request hai.",
+        "🚨 Request police! Ye button kisi aur ki request ka hai 😂",
+    ]
+
     MELCOW_ENG = """<b>Hᴇʟʟᴏ {} 😍, Aɴᴅ Wᴇʟᴄᴏᴍᴇ Tᴏ {} Gʀᴏᴜᴘ ❤️</b>"""
 
     
