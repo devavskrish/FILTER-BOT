@@ -233,6 +233,40 @@ Money heist S0E01
         "🚨 Request police! Ye button kisi aur ki request ka hai 😂",
     ]
 
+    # Step 4: Rotating fun + soft channel-promotion lines.
+    # The bot randomly mixes jokes with occasional @Rkmovieszip promotion.
+    FUN_JOKES = [
+        "🍿 Movie mil gayi bhai! Ab bas popcorn ka intezam tumhara 😂",
+        "😂 Plot twist: tum movie dhund rahe the, movie tumhe mil gayi!",
+        "😎 Itna search kyun karna bhai? Movie mil gayi na 😂",
+        "🤣 Google bhi soch raha hoga: bhai ko movie chahiye ya PhD?",
+        "🎬 Movie ready! Ab acting tum mat start kar dena 😂",
+        "🍿 Ek movie khatam, agli movie ki tension abhi se mat lo 😎",
+        "🔥 Movie mil gayi! Mission successful, agent! 🕵️😂",
+        "😂 Aaj ka homework: movie dekho aur chill karo!",
+        "😜 Movie mil gayi boss, ab excuse kya hai?",
+        "🎥 Popcorn ready? Kyunki movie ka scene set hai! 🍿",
+        "🤣 Search ka result mil gaya, ab life ka result baad mein dekhenge!",
+        "😎 Download karo, relax karo, aur movie ko enjoy karo! 🍿",
+    ]
+
+    FUN_PROMO_MIX = [
+        "🔥 Aisi aur movies ke liye @Rkmovieszip ko yaad rakhna 😎",
+        "🍿 Ek movie khatam? Agli ke liye @Rkmovieszip ready hai! 🔥",
+        "😂 Movie mil gayi! Ab @Rkmovieszip par agli wali dhoondo 😎",
+        "🎬 More Movies • Web Series • Anime — @Rkmovieszip 🔥",
+        "😎 Movie collection chahiye? @Rkmovieszip par milte hain! 🍿",
+        "🚀 Next movie mission: @Rkmovieszip 🔥",
+        "🍿 Watch, chill & repeat — @Rkmovieszip 😎",
+        "🔥 Movie mil gayi boss! Aisi aur ke liye @Rkmovieszip",
+    ]
+
+    FUN_CHANNEL_PROMO = [
+        "🎬 More movies ke liye @Rkmovieszip — milte rehna! 🔥",
+        "👑 Movie lovers ka adda: @Rkmovieszip 🍿",
+        "🔥 Latest movie hunt? @Rkmovieszip yaad rakho!",
+    ]
+
     MELCOW_ENG = """<b>Hᴇʟʟᴏ {} 😍, Aɴᴅ Wᴇʟᴄᴏᴍᴇ Tᴏ {} Gʀᴏᴜᴘ ❤️</b>"""
 
     
