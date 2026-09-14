@@ -1,6 +1,7 @@
 # This code has been modified by @Looteredev
 # Please do not remove this credit
 import asyncio
+import re
 import ast
 import math
 import random
@@ -1756,6 +1757,20 @@ def _fun_notice(pool, *args):
         return pool[0].format(*args) if args else pool[0]
 
 
+def _step4_fun_line():
+    """Return a short rotating Step-4 joke/promotion line."""
+    try:
+        # Promotion is frequent enough to help the channel, but not on every result.
+        roll = random.random()
+        if roll < 0.50:
+            return random.choice(script.FUN_PROMO_MIX)
+        if roll < 0.90:
+            return random.choice(script.FUN_JOKES)
+        return random.choice(script.FUN_CHANNEL_PROMO)
+    except Exception:
+        return "🍿 Enjoy the movie! 🔥 @Rkmovieszip"
+
+
 async def ai_spell_check(chat_id, wrong_name):
     """Find a likely movie/series title when the database search has no result.
 
@@ -2003,6 +2018,12 @@ async def auto_filter(client, msg, spoll=False):
                 for file in files:
                     cap += f"<b><a href='https://telegram.me/{temp.U_NAME}?start=files_{message.chat.id}_{file.file_id}'> 📁 {get_size(file.file_size)} ▷ {file.file_name}\n\n</a></b>"
 
+        # Step 4: replace the planned 30-second preview with a rotating fun/promo line.
+        # Keep captions under Telegram's practical caption limit.
+        fun_line = _step4_fun_line()
+        if len(cap) + len(fun_line) + 20 <= 1000:
+            cap = f"{cap}\n\n<b>{fun_line}</b>"
+
         if imdb and imdb.get('poster'):  
             try:
                 hehe = await message.reply_photo(photo=imdb.get('poster'), caption=cap, reply_markup=InlineKeyboardMarkup(btn))
@@ -2065,63 +2086,146 @@ async def auto_filter(client, msg, spoll=False):
             return
 
 async def advantage_spell_chok(client, message):
+    """Show smart, relevant title suggestions when an exact search fails.
+
+    Step 3 upgrade:
+    - Normalize the user's search before comparing titles.
+    - Rank IMDb candidates with fuzzy matching instead of showing arbitrary results.
+    - Prefer movie / TV-series results and keep suggestions short and relevant.
+    - Keep the existing callback flow so selecting a suggestion searches the bot DB.
+    """
     mv_id = message.id
-    search = message.text
+    search = message.text.strip()
     chat_id = message.chat.id
-    user = message.from_user.id
     settings = await get_settings(chat_id)
-    find = search.split(" ")
-    query = ""
-    removes = ["in","upload", "series", "full", "horror", "thriller", "mystery", "print", "file", "send", "chahiye", "chiye", "movi", "movie", "bhejo", "dijiye", "jaldi", "hd", "bollywood", "hollywood", "south", "karo"]
-    for x in find:
-        if x in removes:
-            continue
-        else:
-            query = query + x + " "
-    query = re.sub(
-        r"\b(pl(i|e)*?(s|z+|ease|se|ese|(e+)s(e)?)|((send|snd|giv(e)?|gib)(\sme)?)|movie(s)?|new|latest|br((o|u)h?)*|^h(e|a)?(l)*(o)*|mal(ayalam)?|t(h)?amil|file|that|find|und(o)*|kit(t(i|y)?)?o(w)?|thar(u)?(o)*w?|kittum(o)*|aya(k)*(um(o)*)?|full\smovie|any(one)|with\ssubtitle(s)?)",
-        "", message.text, flags=re.IGNORECASE)
-    query = query.strip() + " movie"
+
+    def normalize(value):
+        value = str(value or '').lower()
+        value = re.sub(r"['’`\"]", '', value)
+        value = re.sub(r'[^a-z0-9\s]', ' ', value)
+        value = re.sub(r'\s+', ' ', value).strip()
+        return value
+
     try:
+        # Remove common request words so the suggestion engine focuses on the title.
+        find = search.split()
+        removes = {
+            'in', 'upload', 'series', 'full', 'horror', 'thriller', 'mystery',
+            'print', 'file', 'files', 'send', 'chahiye', 'chiye', 'movi', 'movie',
+            'movies', 'bhejo', 'dijiye', 'jaldi', 'hd', 'bollywood', 'hollywood',
+            'south', 'karo', 'please', 'pls', 'plz', 'download', 'link', 'watch'
+        }
+        cleaned_words = [x for x in find if x.lower() not in removes]
+        cleaned_search = normalize(' '.join(cleaned_words)) or normalize(search)
+
+        # IMDb provides candidate titles; fuzzy matching decides which ones are useful.
         movies = await get_poster(search, bulk=True)
-    except:
+    except Exception as e:
+        logger.exception('Smart suggestion lookup failed: %s', e)
         k = await message.reply_text(_fun_notice(script.FUN_ERROR))
         await asyncio.sleep(60)
         await k.delete()
         try:
             await message.delete()
-        except:
+        except Exception:
             pass
         return
+
     if not movies:
-        google = search.replace(" ", "+")
+        google = search.replace(' ', '+')
         button = [[
-            InlineKeyboardButton("🔍 ᴄʜᴇᴄᴋ sᴘᴇʟʟɪɴɢ ᴏɴ ɢᴏᴏɢʟᴇ 🔍", url=f"https://www.google.com/search?q={google}")
+            InlineKeyboardButton(
+                '🔍 ᴄʜᴇᴄᴋ sᴘᴇʟʟɪɴɢ ᴏɴ ɢᴏᴏɢʟᴇ 🔍',
+                url=f'https://www.google.com/search?q={google}'
+            )
         ]]
-        k = await message.reply_text(text=_fun_notice(script.FUN_NO_RESULT, search), reply_markup=InlineKeyboardMarkup(button))
+        k = await message.reply_text(
+            text=_fun_notice(script.FUN_NO_RESULT, search),
+            reply_markup=InlineKeyboardMarkup(button)
+        )
         await asyncio.sleep(120)
         await k.delete()
         try:
             await message.delete()
-        except:
+        except Exception:
             pass
         return
+
+    # Build a small ranked list.  A candidate must have a meaningful fuzzy score.
+    ranked = []
+    seen = set()
+    for movie in movies:
+        title = movie.get('title')
+        if not title:
+            continue
+        key = normalize(title)
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        score = process.extractOne(cleaned_search, [key])[1]
+        kind = str(movie.get('kind') or '').lower()
+        if kind in ('movie', 'tv series', 'tv mini series', 'tv movie'):
+            score += 3
+        ranked.append((score, movie))
+
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    suggestions = [movie for score, movie in ranked if score >= 55][:6]
+
+    if not suggestions:
+        google = search.replace(' ', '+')
+        button = [[
+            InlineKeyboardButton(
+                '🔍 ᴄʜᴇᴄᴋ sᴘᴇʟʟɪɴɢ ᴏɴ ɢᴏᴏɢʟᴇ 🔍',
+                url=f'https://www.google.com/search?q={google}'
+            )
+        ]]
+        k = await message.reply_text(
+            text=_fun_notice(script.FUN_NO_RESULT, search),
+            reply_markup=InlineKeyboardMarkup(button)
+        )
+        await asyncio.sleep(120)
+        await k.delete()
+        try:
+            await message.delete()
+        except Exception:
+            pass
+        return
+
     user = message.from_user.id if message.from_user else 0
-    buttons = [[
-        InlineKeyboardButton(text=movie.get('title'), callback_data=f"spol#{movie.movieID}#{user}")
-    ]
-        for movie in movies
-    ]
-    buttons.append(
-        [InlineKeyboardButton(text="🚫 ᴄʟᴏsᴇ 🚫", callback_data='close_data')]
+    buttons = []
+    for movie in suggestions:
+        title = movie.get('title', 'Unknown Title')
+        year = movie.get('year')
+        label = f'🎬 {title}' + (f' ({year})' if year else '')
+        buttons.append([
+            InlineKeyboardButton(
+                text=label,
+                callback_data=f'spol#{movie.movieID}#{user}'
+            )
+        ])
+
+    buttons.append([
+        InlineKeyboardButton('🚫 ᴄʟᴏsᴇ 🚫', callback_data='close_data')
+    ])
+
+    suggestion_text = (
+        f'🧠 <b>Smart Suggestions</b>\n\n'
+        f'🔎 <b>You searched:</b> <code>{search}</code>\n\n'
+        f'😎 Exact match nahi mila, lekin ye titles close lag rahe hain:\n'
+        f'<i>👇 Kisi ek par tap karke database me check karo.</i>'
     )
-    d = await message.reply_text(text=_fun_notice(script.FUN_NO_RESULT, search), reply_markup=InlineKeyboardMarkup(buttons), reply_to_message_id=message.id)
+
+    d = await message.reply_text(
+        text=suggestion_text,
+        reply_markup=InlineKeyboardMarkup(buttons),
+        reply_to_message_id=message.id
+    )
     await asyncio.sleep(120)
-    await d.delete()
+    try:
+        await d.delete()
+    except Exception:
+        pass
     try:
         await message.delete()
-    except:
+    except Exception:
         pass
-                                     
-# This code has been modified by Looteredev
-# Please do not remove this credit
