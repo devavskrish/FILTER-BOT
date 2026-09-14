@@ -1757,6 +1757,59 @@ def _fun_notice(pool, *args):
         return pool[0].format(*args) if args else pool[0]
 
 
+def _step5_result_summary(files, total_results):
+    """Build a compact, premium-looking metadata block for search results."""
+    try:
+        quality_order = [
+            "2160p", "4K", "1440p", "2K", "1080p HEVC", "1080p",
+            "720p HEVC", "720p", "480p HEVC", "480p", "360p"
+        ]
+        found_quality = []
+        total_bytes = 0
+
+        for file in files:
+            name = str(getattr(file, "file_name", "") or "")
+            upper_name = name.upper().replace(".", " ").replace("_", " ").replace("-", " ")
+
+            try:
+                total_bytes += int(getattr(file, "file_size", 0) or 0)
+            except (TypeError, ValueError):
+                pass
+
+            # Check HEVC/H.265 first so 1080p HEVC is shown accurately.
+            if re.search(r"(?:2160P|4K)", upper_name) and "4K" not in found_quality:
+                found_quality.append("4K")
+            elif re.search(r"(?:1440P|2K)", upper_name) and "2K" not in found_quality:
+                found_quality.append("2K")
+            elif re.search(r"1080P.*(?:HEVC|H265|H\.265|X265)", upper_name) and "1080p HEVC" not in found_quality:
+                found_quality.append("1080p HEVC")
+            elif "1080P" in upper_name and "1080p" not in found_quality:
+                found_quality.append("1080p")
+            elif re.search(r"720P.*(?:HEVC|H265|H\.265|X265)", upper_name) and "720p HEVC" not in found_quality:
+                found_quality.append("720p HEVC")
+            elif "720P" in upper_name and "720p" not in found_quality:
+                found_quality.append("720p")
+            elif re.search(r"480P.*(?:HEVC|H265|H\.265|X265)", upper_name) and "480p HEVC" not in found_quality:
+                found_quality.append("480p HEVC")
+            elif "480P" in upper_name and "480p" not in found_quality:
+                found_quality.append("480p")
+            elif "360P" in upper_name and "360p" not in found_quality:
+                found_quality.append("360p")
+
+        quality_text = " • ".join(found_quality) if found_quality else "Various"
+        total_size = get_size(total_bytes) if total_bytes else "N/A"
+
+        return (
+            "<b>━━━━━━━━━━━━━━━━━━</b>\n"
+            f"📦 <b>Available Files:</b> <code>{total_results}</code>\n"
+            f"🎞️ <b>Qualities:</b> <code>{quality_text}</code>\n"
+            f"💾 <b>Total Size:</b> <code>{total_size}</code>\n"
+            "<b>━━━━━━━━━━━━━━━━━━</b>"
+        )
+    except Exception:
+        return f"<b>📦 Available Files:</b> <code>{total_results}</code>"
+
+
 def _step4_fun_line():
     """Return a short rotating Step-4 joke/promotion line."""
     try:
@@ -2018,7 +2071,13 @@ async def auto_filter(client, msg, spoll=False):
                 for file in files:
                     cap += f"<b><a href='https://telegram.me/{temp.U_NAME}?start=files_{message.chat.id}_{file.file_id}'> 📁 {get_size(file.file_size)} ▷ {file.file_name}\n\n</a></b>"
 
-        # Step 4: replace the planned 30-second preview with a rotating fun/promo line.
+        # Step 5: add a compact metadata summary so the result is easier to scan.
+        # It works with both IMDb and non-IMDb results and stays safe for custom templates.
+        result_summary = _step5_result_summary(files, total_results)
+        if len(cap) + len(result_summary) + 20 <= 1000:
+            cap = f"{cap}\n\n{result_summary}"
+
+        # Step 4: keep the rotating fun/promo line after the result details.
         # Keep captions under Telegram's practical caption limit.
         fun_line = _step4_fun_line()
         if len(cap) + len(fun_line) + 20 <= 1000:
