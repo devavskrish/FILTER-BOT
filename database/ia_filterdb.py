@@ -137,6 +137,48 @@ async def get_search_results(chat_id, query, file_type=None, max_results=10, off
 
     return files, next_offset, total_results
 
+
+async def get_fuzzy_file_suggestions(query, limit=6):
+    """Return close file-title suggestions from the bot database.
+
+    Used when IMDb cannot find a candidate. This makes short/typo searches
+    such as "maine" -> "main" work against the files the bot actually owns.
+    """
+    query = re.sub(r"\s+", " ", str(query or "").strip().lower())
+    query = re.sub(r"[^a-z0-9\s]", " ", query)
+    query = re.sub(r"\s+", " ", query).strip()
+    if not query:
+        return []
+
+    cursor = Media.find({}, {"file_name": 1}).limit(10000)
+    docs = await cursor.to_list(length=10000)
+    titles = []
+    seen = set()
+    for doc in docs:
+        title = str(doc.get("file_name", "")).strip()
+        if not title:
+            continue
+        key = re.sub(r"[^a-z0-9\s]", " ", title.lower())
+        key = re.sub(r"\s+", " ", key).strip()
+        if key and key not in seen:
+            seen.add(key)
+            titles.append(title)
+
+    if not titles:
+        return []
+
+    matches = process.extract(query, titles, scorer=process.fuzz.WRatio, limit=max(limit * 3, limit))
+    results = []
+    for title, score in matches:
+        # Short queries need a slightly lower threshold; otherwise useful
+        # titles like "main" can be discarded too aggressively.
+        threshold = 60 if len(query) <= 5 else 55
+        if score >= threshold:
+            results.append(title)
+        if len(results) >= limit:
+            break
+    return results
+
 async def get_all_files():
     cursor = Media.find() 
     all_files = await cursor.to_list(length=10000)  
