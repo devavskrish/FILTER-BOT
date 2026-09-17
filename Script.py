@@ -261,6 +261,14 @@ Money heist S0E01
         "🔥 Movie mil gayi boss! Aisi aur ke liye @Rkmovieszip",
     ]
 
+    # Step 6: opening stickers rotate randomly on /start.
+    START_STICKERS = [
+        "CAACAgUAAxkBAAEBxxZqp9gpHtd98AjCeFs_ZrBDt1N1hgACCRcAAorhqFcwSYRIxpaXqh4E",
+        "CAACAgUAAxkBAAEBxxVqp9gF8eqodO11CSQWVdnQyOd11wACTSUAAuyroFaQ6J6sEWNm3B4E",
+        "CAACAgQAAxkBAAEBxw9qp9AWb_RffFYBQ6S0tgGZcYeFbgACSBgAAqbxcR7UGkOq4W6aKB4E",
+        "CAACAgIAAxkBAAEBxwJqp83guPgwMuf3rYulh7oUw_v2ogACBQMAAladvQrrlyw2i1A6hh4E",
+    ]
+
     FUN_CHANNEL_PROMO = [
         "🎬 More movies ke liye @Rkmovieszip — milte rehna! 🔥",
         "👑 Movie lovers ka adda: @Rkmovieszip 🍿",
