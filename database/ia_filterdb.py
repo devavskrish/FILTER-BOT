@@ -139,10 +139,10 @@ async def get_search_results(chat_id, query, file_type=None, max_results=10, off
 
 
 async def get_fuzzy_file_suggestions(query, limit=6):
-    """Return close file-title suggestions from the bot database.
+    """Return close title suggestions from the bot database safely.
 
-    Used when IMDb cannot find a candidate. This makes short/typo searches
-    such as "maine" -> "main" work against the files the bot actually owns.
+    Uses the existing get_all_files() path instead of a projected Motor/
+    umongo cursor, which is more compatible with this bot's DB layer.
     """
     query = re.sub(r"\s+", " ", str(query or "").strip().lower())
     query = re.sub(r"[^a-z0-9\s]", " ", query)
@@ -150,31 +150,40 @@ async def get_fuzzy_file_suggestions(query, limit=6):
     if not query:
         return []
 
-    cursor = Media.find({}, {"file_name": 1}).limit(10000)
-    docs = await cursor.to_list(length=10000)
-    titles = []
+    try:
+        titles = await get_all_files()
+    except Exception as e:
+        logger.exception("Could not load titles for fuzzy suggestions: %s", e)
+        return []
+
+    cleaned = []
     seen = set()
-    for doc in docs:
-        title = str(doc.get("file_name", "")).strip()
+    for title in titles or []:
+        title = str(title or "").strip()
         if not title:
             continue
         key = re.sub(r"[^a-z0-9\s]", " ", title.lower())
         key = re.sub(r"\s+", " ", key).strip()
         if key and key not in seen:
             seen.add(key)
-            titles.append(title)
+            cleaned.append((key, title))
 
-    if not titles:
+    if not cleaned:
         return []
 
-    matches = process.extract(query, titles, scorer=process.fuzz.WRatio, limit=max(limit * 3, limit))
+    choices = [key for key, _ in cleaned]
+    try:
+        matches = process.extract(query, choices, scorer=process.fuzz.WRatio, limit=max(limit * 3, limit))
+    except Exception as e:
+        logger.exception("Fuzzy suggestion matching failed: %s", e)
+        return []
+
+    key_to_title = {key: title for key, title in cleaned}
     results = []
-    for title, score in matches:
-        # Short queries need a slightly lower threshold; otherwise useful
-        # titles like "main" can be discarded too aggressively.
-        threshold = 60 if len(query) <= 5 else 55
+    threshold = 58 if len(query) <= 5 else 55
+    for key, score in matches:
         if score >= threshold:
-            results.append(title)
+            results.append(key_to_title[key])
         if len(results) >= limit:
             break
     return results
